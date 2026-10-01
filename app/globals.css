@@ -1,0 +1,590 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Self-hosted Vazirmatn — Google Fonts flaps on this network, so the variable
+   family ships in node_modules and is bundled by Turbopack. */
+@import "@fontsource-variable/vazirmatn/index.css";
+
+/* Streamdown ships Tailwind classes (list markers, spacing) in its dist —
+   without this source they are never generated and lists render bare. */
+@source "../node_modules/streamdown/dist/*.js";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Vazirmatn carries Persian + Latin; mono stays for code/identifiers only */
+  --font-sans:
+    "Vazirmatn Variable", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", "Fira Code",
+    Menlo, Consolas, monospace;
+  --font-heading: "Vazirmatn Variable", var(--font-sans);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Semantic status colors, exposed as Tailwind utilities (bg-ok, text-warn…) */
+  --color-ok: var(--ok);
+  --color-ok-foreground: var(--ok-fg);
+  --color-warn: var(--warn);
+  --color-warn-foreground: var(--warn-fg);
+  --color-err: var(--err);
+  --color-err-foreground: var(--err-fg);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-fg);
+
+  /* Foreground ramp as utilities (text-fg-3 = muted-ish) */
+  --color-fg-0: var(--fg-0);
+  --color-fg-1: var(--fg-1);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-fg-4: var(--fg-4);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.85);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * Liquid-glass design system — cool, airy slate/sky.
+ *   :root  = LIGHT (default; matches the reference)
+ *   .dark  = deep blue-charcoal
+ * Glass surfaces refract an ambient radial-gradient field painted on <body>.
+ * Light is the floor so the no-FOUC script in layout.tsx only ever ADDS .dark.
+ */
+:root {
+  /* surface ramp: page (0) → most-raised (4) */
+  --bg-0: hsl(210 30% 97%);
+  --bg-1: hsl(210 32% 95%);
+  --bg-2: hsl(210 34% 92.5%);
+  --bg-3: hsl(210 36% 89%);
+  --bg-4: hsl(210 40% 85%);
+
+  /* text ramp: strongest (0) → faintest (4) */
+  --fg-0: hsl(217 33% 14%);
+  --fg-1: hsl(217 25% 24%);
+  --fg-2: hsl(217 18% 36%);
+  --fg-3: hsl(217 13% 48%);
+  --fg-4: hsl(217 12% 62%);
+
+  /* glass */
+  --glass-bg: hsl(210 40% 100% / 0.55);
+  --glass-bg-strong: hsl(210 40% 100% / 0.74);
+  /* near-opaque so nested overlays (popovers stacked on glass) stay legible */
+  --glass-bg-popover: hsl(210 40% 100% / 0.92);
+  --glass-border: hsl(210 30% 100% / 0.65);
+  /* dimmer behind modals/sheets */
+  --scrim: hsl(217 33% 14% / 0.15);
+  --glass-blur: 22px;
+  --glass-saturate: 190%;
+  --glass-shadow:
+    0 1px 2px hsl(217 33% 20% / 0.04),
+    0 8px 24px -8px hsl(217 33% 25% / 0.16),
+    0 24px 56px -24px hsl(217 33% 30% / 0.18);
+  --glass-highlight: hsl(0 0% 100% / 0.7);
+
+  /* accent — azure */
+  --accent-base: hsl(205 90% 47%);
+  --accent-fg: hsl(0 0% 100%);
+
+  /* semantic */
+  --ok: hsl(152 62% 40%);
+  --ok-fg: hsl(0 0% 100%);
+  --warn: hsl(38 92% 48%);
+  --warn-fg: hsl(40 50% 12%);
+  --err: hsl(2 78% 56%);
+  --err-fg: hsl(0 0% 100%);
+  --info: hsl(205 90% 47%);
+  --info-fg: hsl(0 0% 100%);
+
+  /* charts — azure→violet→teal→amber→rose, readable on light glass */
+  --chart-1: hsl(205 88% 48%);
+  --chart-2: hsl(265 70% 60%);
+  --chart-3: hsl(172 64% 42%);
+  --chart-4: hsl(38 92% 52%);
+  --chart-5: hsl(340 75% 58%);
+  --chart-grid: hsl(217 20% 50% / 0.14);
+  --chart-axis: hsl(217 15% 45% / 0.55);
+
+  /* ambient field tints (corners + center) */
+  --ambient-1: hsl(205 95% 60% / 0.18);
+  --ambient-2: hsl(265 80% 66% / 0.14);
+  --ambient-3: hsl(172 75% 55% / 0.13);
+
+  /* ---- shadcn bridge (NEVER reintroduce the default palette) ---- */
+  --background: var(--bg-0);
+  --foreground: var(--fg-0);
+  --card: var(--glass-bg);
+  --card-foreground: var(--fg-0);
+  --popover: var(--glass-bg-strong);
+  --popover-foreground: var(--fg-0);
+  --primary: var(--accent-base);
+  --primary-foreground: var(--accent-fg);
+  --secondary: hsl(210 36% 91%);
+  --secondary-foreground: var(--fg-1);
+  --muted: hsl(210 34% 92%);
+  --muted-foreground: var(--fg-3);
+  --accent: hsl(205 80% 92%);
+  --accent-foreground: hsl(205 90% 30%);
+  --destructive: var(--err);
+  --border: hsl(217 24% 50% / 0.16);
+  --input: hsl(217 24% 50% / 0.2);
+  --ring: hsl(205 90% 47% / 0.5);
+  --radius: 0.65rem;
+
+  --sidebar: var(--glass-bg);
+  --sidebar-foreground: var(--fg-1);
+  --sidebar-primary: var(--accent-base);
+  --sidebar-primary-foreground: var(--accent-fg);
+  --sidebar-accent: hsl(205 70% 90% / 0.7);
+  --sidebar-accent-foreground: hsl(205 90% 28%);
+  --sidebar-border: var(--glass-border);
+  --sidebar-ring: hsl(205 90% 47% / 0.5);
+}
+
+.dark {
+  --bg-0: hsl(222 18% 7%);
+  --bg-1: hsl(222 17% 10%);
+  --bg-2: hsl(222 16% 13%);
+  --bg-3: hsl(221 15% 17%);
+  --bg-4: hsl(221 14% 22%);
+
+  --fg-0: hsl(210 30% 96%);
+  --fg-1: hsl(212 22% 86%);
+  --fg-2: hsl(214 16% 72%);
+  --fg-3: hsl(216 13% 58%);
+  --fg-4: hsl(218 12% 44%);
+
+  --glass-bg: hsl(222 16% 13% / 0.55);
+  --glass-bg-strong: hsl(222 17% 15% / 0.78);
+  /* near-opaque so nested overlays (popovers stacked on glass) stay legible */
+  --glass-bg-popover: hsl(222 17% 15% / 0.94);
+  --glass-border: hsl(210 30% 80% / 0.12);
+  /* dimmer behind modals/sheets */
+  --scrim: hsl(222 40% 2% / 0.4);
+  --glass-blur: 24px;
+  --glass-saturate: 175%;
+  --glass-shadow:
+    0 1px 2px hsl(222 40% 2% / 0.5),
+    0 10px 30px -10px hsl(222 50% 2% / 0.55),
+    0 28px 64px -28px hsl(222 50% 2% / 0.6);
+  --glass-highlight: hsl(0 0% 100% / 0.08);
+
+  --accent-base: hsl(202 95% 62%);
+  --accent-fg: hsl(220 40% 8%);
+
+  --ok: hsl(152 58% 52%);
+  --ok-fg: hsl(150 40% 8%);
+  --warn: hsl(40 92% 60%);
+  --warn-fg: hsl(40 50% 10%);
+  --err: hsl(2 80% 64%);
+  --err-fg: hsl(2 40% 10%);
+  --info: hsl(202 95% 62%);
+  --info-fg: hsl(220 40% 8%);
+
+  --chart-1: hsl(202 92% 62%);
+  --chart-2: hsl(264 78% 72%);
+  --chart-3: hsl(168 70% 54%);
+  --chart-4: hsl(40 92% 62%);
+  --chart-5: hsl(338 80% 68%);
+  --chart-grid: hsl(210 25% 70% / 0.12);
+  --chart-axis: hsl(212 16% 60% / 0.5);
+
+  --ambient-1: hsl(205 95% 56% / 0.2);
+  --ambient-2: hsl(264 80% 62% / 0.18);
+  --ambient-3: hsl(170 80% 48% / 0.14);
+
+  --background: var(--bg-0);
+  --foreground: var(--fg-0);
+  --card: var(--glass-bg);
+  --card-foreground: var(--fg-0);
+  --popover: var(--glass-bg-strong);
+  --popover-foreground: var(--fg-0);
+  --primary: var(--accent-base);
+  --primary-foreground: var(--accent-fg);
+  --secondary: hsl(221 15% 18%);
+  --secondary-foreground: var(--fg-1);
+  --muted: hsl(222 15% 16%);
+  --muted-foreground: var(--fg-3);
+  --accent: hsl(206 40% 22%);
+  --accent-foreground: hsl(202 95% 78%);
+  --destructive: var(--err);
+  --border: hsl(210 25% 70% / 0.12);
+  --input: hsl(210 25% 70% / 0.16);
+  --ring: hsl(202 95% 62% / 0.55);
+
+  --sidebar: var(--glass-bg);
+  --sidebar-foreground: var(--fg-1);
+  --sidebar-primary: var(--accent-base);
+  --sidebar-primary-foreground: var(--accent-fg);
+  --sidebar-accent: hsl(206 38% 24% / 0.7);
+  --sidebar-accent-foreground: hsl(202 95% 80%);
+  --sidebar-border: var(--glass-border);
+  --sidebar-ring: hsl(202 95% 62% / 0.55);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+    /* Persian needs no negative tracking; Latin headings tighten via .tracked-latin */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent-base) 28%, transparent);
+    color: var(--fg-0);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--fg-3) 35%, transparent) transparent;
+  }
+
+  /* Latin runs inside Persian prose get a hair of negative tracking; Persian
+     glyphs must never be condensed. Apply to Latin headings only. */
+  .tracking-latin {
+    letter-spacing: -0.01em;
+  }
+
+  /* Directional icons opt into RTL mirroring via data-rtl-flip */
+  [data-rtl-flip]:dir(rtl) {
+    transform: scaleX(-1);
+  }
+
+  /* Soften lucide stroke globally to match the liquid-glass aesthetic */
+  svg.lucide {
+    stroke-width: 1.5;
+  }
+}
+
+/*
+ * Ambient field — large soft radial gradients giving the glass something to
+ * refract. Fixed, behind everything, non-interactive. Both themes.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      62% 55% at 88% -8%,
+      var(--ambient-1) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      55% 50% at 8% 12%,
+      var(--ambient-2) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      70% 60% at 50% 118%,
+      var(--ambient-3) 0%,
+      transparent 62%
+    );
+}
+
+/* Faint grain/vignette on top of the field to avoid flat banding */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    130% 120% at 50% 0%,
+    transparent 55%,
+    color-mix(in oklab, var(--bg-0) 70%, black) 140%
+  );
+  opacity: 0.5;
+}
+
+/*
+ * .glass / .glass-strong — the core surface treatment.
+ * background + backdrop blur + saturate + hairline border + soft shadow +
+ * an inset top highlight that reads as the lit edge of a glass pane.
+ */
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur))
+      saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      var(--glass-shadow),
+      inset 0 1px 0 var(--glass-highlight);
+  }
+
+  .glass-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(calc(var(--glass-blur) * 1.2))
+      saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.2))
+      saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      var(--glass-shadow),
+      inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* Near-opaque variant for nested overlays (a popover floating over glass) */
+  .glass-popover {
+    background: var(--glass-bg-popover);
+    backdrop-filter: blur(calc(var(--glass-blur) * 1.2))
+      saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.2))
+      saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      var(--glass-shadow),
+      inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* Canonical metadata/caption size — supersedes the text-[10px]/[11px] soup */
+  .text-meta {
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+}
+
+/* Status dot — replaces the phosphor LED. Calm by default, pulses while live. */
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--fg-4);
+  box-shadow: 0 0 0 0 transparent;
+}
+.status-dot[data-state="active"] {
+  background: var(--accent-base);
+  animation: status-pulse 1.6s ease-out infinite;
+}
+.status-dot[data-state="error"] {
+  background: var(--err);
+}
+
+@keyframes status-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent-base) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 0.4rem transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* Streaming caret for the last assistant text part */
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.stream-caret {
+  display: inline-block;
+  width: 0.5ch;
+  height: 1em;
+  margin-inline-start: 0.15ch;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  background: var(--accent-base);
+  animation: caret-blink 1.1s steps(1) infinite;
+}
+
+/* Skeleton shimmer — an accent-tinted highlight sweeping across loading bars */
+@keyframes glass-sheen {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.glass-sheen {
+  background-image: linear-gradient(
+    100deg,
+    transparent 25%,
+    color-mix(in oklab, var(--accent-base) 14%, transparent) 50%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: glass-sheen 1.6s ease-in-out infinite;
+}
+
+/* Live tool-call border: a two-stop accent gradient sliding around a rounded
+   surface. ::before paints content-box + border-box double background so the
+   gradient shows only in the 1px border ring (clean with any radius). */
+@keyframes accent-border-slide {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+.accent-border-active {
+  position: relative;
+}
+.accent-border-active::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    110deg,
+    color-mix(in oklab, var(--accent-base) 70%, transparent),
+    color-mix(in oklab, var(--accent-base) 12%, transparent),
+    color-mix(in oklab, var(--accent-base) 70%, transparent)
+  );
+  background-size: 200% 100%;
+  /* mask out the fill so only the border ring is painted */
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: accent-border-slide 2s linear infinite;
+}
+
+/* Breathing accent halo for live/active affordances — slower status-pulse */
+@keyframes ai-glow-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--accent-base) 45%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 0.6rem transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.ai-glow-pulse {
+  animation: ai-glow-pulse 2.2s ease-out infinite;
+}
+
+/* Idle breathing for the home empty-state tile — subtle scale + accent glow */
+@keyframes ai-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 2rem 0 color-mix(in oklab, var(--accent-base) 22%, transparent);
+  }
+}
+.ai-breathe {
+  animation: ai-breathe 3.5s ease-in-out infinite;
+}
+
+/*
+ * Block code is always LTR, regardless of the surrounding RTL prose direction.
+ * A Persian-majority reply gets dir="rtl" on its wrapper (detectDir), which
+ * would otherwise mirror code indentation, brackets and punctuation. Scope to
+ * block code only (pre / Shiki) — inline `code` keeps flowing within RTL text.
+ */
+pre,
+pre code,
+.shiki {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+
+/*
+ * Accessibility guards.
+ * reduced-transparency: drop blur and lean on solid surfaces (don't kill the
+ *   layout). reduced-motion: stop decorative loops; keep functional spinners.
+ */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-strong,
+  .glass-popover {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--bg-1);
+  }
+  .dark .glass,
+  .dark .glass-strong,
+  .dark .glass-popover {
+    background: var(--bg-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot[data-state="active"],
+  .stream-caret,
+  .glass-sheen,
+  .ai-glow-pulse,
+  .ai-breathe {
+    animation: none;
+  }
+  .accent-border-active::before {
+    animation: none;
+  }
+  body::before,
+  body::after {
+    /* keep the field, just guarantee no implicit transitions repaint it */
+    transition: none;
+  }
+}
