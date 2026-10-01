@@ -109,3 +109,7 @@ No automated test suite yet; `npx tsc --noEmit`, `npm run lint` and `npm run bui
 ## License
 
 MIT, see `LICENSE`.
+
+---
+
+<sub>Built by <a href="https://sepehrradmard.ir">Sepehr Radmard</a> · <a href="https://www.linkedin.com/in/sepehr-radmard/">LinkedIn</a> · <a href="https://github.com/sepehr071">GitHub</a> · more projects on my <a href="https://github.com/sepehr071">profile</a></sub>
